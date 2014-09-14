@@ -58,8 +58,10 @@
         <pathelement location="WebRoot/WEB-INF/lib/ezmorph-1.0.1.jar"/>
         <pathelement location="WebRoot/WEB-INF/lib/json-lib-2.4-jdk15.jar"/>
         <path refid="Apache Tomcat v8.0 [Apache Tomcat v8.0].libraryclasspath"/>
-        <pathelement location="../json/WebRoot/WEB-INF/lib/mysql-connector-java-5.1.6-bin.jar"/>
-        <pathelement location="../androidandservlet/ServerJsonDemo/WebRoot/WEB-INF/lib/commons-collections-3.2.1.jar"/>
+        <!-- <pathelement location="../json/WebRoot/WEB-INF/lib/mysql-connector-java-5.1.6-bin.jar"/> -->
+        <!-- <pathelement location="../androidandservlet/ServerJsonDemo/WebRoot/WEB-INF/lib/commons-collections-3.2.1.jar"/> -->
+        <pathelement location="WebRoot/WEB-INF/lib/mysql-connector-java-5.1.6-bin.jar"/>
+        <pathelement location="WebRoot/WEB-INF/lib/commons-collections-3.2.1.jar"/>
     </path>
     <target name="init">
         <mkdir dir="WebRoot/WEB-INF/classes"/>
