@@ -1,0 +1,32 @@
+Orientation:
+	Client->Server
+Type:
+	HTTP_Post
+Format:
+	"type": "query",
+	"vector": [
+	    {
+	        "BSSID": "AA-AA",
+	        "level": -50
+	    },
+	    {
+	       "BSSID": "AA-AA",
+	       "level": -50
+	    }
+	]
+
+Orientation:
+	Server->Client
+Type:
+	Http_Response
+Format:
+	{
+	    "flag": 0 
+	}
+	OR
+	{
+	    "flag": 1, 
+	    "label":"classroom1"
+	}
+
+

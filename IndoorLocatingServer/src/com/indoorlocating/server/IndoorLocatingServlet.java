@@ -1,12 +1,13 @@
 package com.indoorlocating.server;
 
-import java.io.IOException;
 import java.io.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.*;
 
 public class IndoorLocatingServlet extends HttpServlet 
 {
@@ -17,8 +18,7 @@ public class IndoorLocatingServlet extends HttpServlet
 			throws ServletException, IOException 
 	{
 		// TODO Auto-generated method stub
-	    PrintWriter out=resp.getWriter();
-	    out.print("HelloWorld");
+		doPost(req, resp);
 	}
 
 	@Override
@@ -27,6 +27,25 @@ public class IndoorLocatingServlet extends HttpServlet
 	{
 		// TODO Auto-generated method stub
 	    PrintWriter out=resp.getWriter();
-	    out.print("HelloWorld");
+	    
+	    resp.setContentType("text/html;charset=UTF-8");
+	    String type = req.getParameter("type").toString().trim();
+	    if (type.equals("input"))
+	    {
+	    	String label=req.getParameter("label").trim();
+	    	String vector=req.getParameter("vector").toString().trim();
+	    	JSONArray jsonArray=JSONArray.fromObject(vector);
+	    	JSONObject jsonObject=new JSONObject();
+	    	jsonObject.put("data",jsonArray);
+	    	boolean flag=DBInterface.InsertRecord(label, vector);
+	    	JSONObject reply=new JSONObject();
+	    	reply.put("flag",flag?1:0);
+	    	out.println(reply.toString());
+	    }else 
+	    if (type.equals("query")) 
+	    {
+	    	String vector=req.getParameter("vector").toString().trim();
+	    	out.println(Logic.GetLocation(vector));
+	    }
 	}
 }

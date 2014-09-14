@@ -1,0 +1,27 @@
+Orientation:
+	Client->Server
+Type:
+	HTTP_Post
+Format:
+	"type": "input",
+	"label": "classroom001",
+	"vector": [
+	    {
+	        "BSSID": "AA-AA",
+	        "level": -50
+	    },
+	    {
+	       "BSSID": "AA-AA",
+	       "level": -50
+	    }
+	]
+
+Orientation:
+	Server->Client
+Type:
+	Http_Response
+Format:
+	{
+	    "flag": 0 //or 1. 0 indicates failure. 1 indicates success.
+	}
+
