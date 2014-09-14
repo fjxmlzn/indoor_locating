@@ -2,15 +2,96 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#CD950C"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.indoorlocating.client.MainActivity" >
-
-    <TextView
+    tools:context="com.example.indoorlocatingclient.MainActivity" >
+ 
+    <Button
+        android:id="@+id/scan_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_alignBaseline="@+id/upload_button"
+        android:layout_alignBottom="@+id/upload_button"
+        android:layout_alignLeft="@+id/des_edit"
+        android:layout_alignStart="@+id/des_edit"
+        android:text="@string/scan_string" />
+    
+    <EditText
+        android:id="@+id/des_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/locate_button"
+        android:layout_alignEnd="@+id/locate_button"
+        android:layout_below="@+id/des_label"
+        android:layout_marginTop="17dp"
+        android:singleLine="true"
+        android:ems="10"
+        android:hint="@string/input_hint" />
+
+    <TextView
+        android:id="@+id/des_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:text="@string/input_label"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/locate_info_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/scan_button"
+        android:layout_alignStart="@id/scan_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@id/locate_button"
+        android:layout_alignEnd="@id/locate_button"
+        android:layout_below="@+id/locate_label"
+        android:background="#483D8B" />
+
+    <TextView
+        android:id="@+id/locate_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/upload_button"
+        android:layout_centerHorizontal="true"
+        android:text="@string/locate_info_label"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/wifi_info_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/upload_button"
+        android:layout_alignLeft="@+id/des_edit"
+        android:layout_alignStart="@+id/des_edit"
+        android:layout_alignRight="@+id/des_edit"
+        android:layout_alignEnd="@+id/des_edit"
+        android:layout_below="@+id/des_edit"
+        android:background="#483D8B" />
+
+    <Button
+        android:id="@+id/locate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="138dp"
+        android:layout_toEndOf="@+id/des_label"
+        android:layout_toRightOf="@+id/locate_label"
+        android:text="@string/locate_string" />
+
+    <Button
+        android:id="@+id/upload_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/locate_button"
+        android:layout_alignBottom="@+id/locate_button"
+        android:layout_alignLeft="@+id/locate_label"
+        android:layout_alignStart="@+id/locate_label"
+        android:text="@string/upload_string" />
 
 </RelativeLayout>
