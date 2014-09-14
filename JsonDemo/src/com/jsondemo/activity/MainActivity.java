@@ -96,7 +96,7 @@ public class MainActivity extends Activity {
 			protected String doInBackground(String... params) {	
 				//通过HttpPost连接servlet
 				HttpClient hc = new DefaultHttpClient();
-				String address = "http://101.6.99.79:8080/ServerJsonDemo/servlet/JsonServlet";
+				String address = "http://59.66.141.113:8080/ServerJsonDemo/servlet/JsonServlet";
 				HttpPost hp = new HttpPost(address);
 				String name = (inName).getText().toString();
 				String age = (inAge).getText().toString();
@@ -142,7 +142,7 @@ public class MainActivity extends Activity {
 			// TODO Auto-generated method stub
 			HttpClient hc = new DefaultHttpClient();
 			// 这里是服务器的IP，不要写成localhost了，即使在本机测试也要写上本机的IP地址，localhost会被当成模拟器自身的
-			String address = "http://101.6.99.79:8080/ServerJsonDemo/servlet/JsonServlet";
+			String address = "http://59.66.141.113:8080/ServerJsonDemo/servlet/JsonServlet";
 			HttpPost hp = new HttpPost(address);
 			List<NameValuePair>param = new ArrayList<NameValuePair>();
 			param.add(new BasicNameValuePair("type", "search"));
