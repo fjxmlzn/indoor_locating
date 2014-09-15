@@ -253,8 +253,8 @@ int id beginning 0x7f050011
 int id checkbox 0x7f05002d
 int id collapseActionView 0x7f05000d
 int id default_activity_button 0x7f050028
-int id des_edit 0x7f050040
-int id des_label 0x7f05003d
+int id des_edit 0x7f05003e
+int id des_label 0x7f050040
 int id dialog 0x7f05000e
 int id disableHome 0x7f050008
 int id dropdown 0x7f05000f
@@ -269,7 +269,7 @@ int id ifRoom 0x7f05000a
 int id image 0x7f050027
 int id listMode 0x7f050001
 int id list_item 0x7f050029
-int id locate_button 0x7f05003c
+int id locate_button 0x7f05003f
 int id locate_info_text 0x7f050041
 int id locate_label 0x7f050042
 int id middle 0x7f050012
@@ -279,7 +279,7 @@ int id normal 0x7f050000
 int id progress_circular 0x7f050018
 int id progress_horizontal 0x7f050019
 int id radio 0x7f05002f
-int id scan_button 0x7f05003f
+int id scan_button 0x7f05003c
 int id search_badge 0x7f050032
 int id search_bar 0x7f050031
 int id search_button 0x7f050033
@@ -300,7 +300,7 @@ int id tabMode 0x7f050002
 int id title 0x7f05002b
 int id top_action_bar 0x7f050020
 int id up 0x7f050021
-int id upload_button 0x7f05003e
+int id upload_button 0x7f05003d
 int id useLogo 0x7f050003
 int id wifi_info_text 0x7f050043
 int id withText 0x7f05000c

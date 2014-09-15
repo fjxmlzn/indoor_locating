@@ -116,7 +116,7 @@ public class DBUtil
 	/**¹Ø±Õ×ÊÔ´
 	 * @param conn
 	 */
-	public static void CloseResources(Connection conn) 
+	public static void closeResources(Connection conn) 
 	{
 		try 
 		{
@@ -132,7 +132,7 @@ public class DBUtil
 	/**
 	 * @param stmt
 	 */
-	public static void CloseResources(Statement stmt) 
+	public static void closeResources(Statement stmt) 
 	{
 		try 
 		{
@@ -148,7 +148,7 @@ public class DBUtil
 	/**
 	 * @param rs
 	 */
-	public static void CloseResources(ResultSet rs) 
+	public static void closeResources(ResultSet rs) 
 	{
 		try 
 		{
@@ -164,30 +164,30 @@ public class DBUtil
 	/**
 	 * @param rs
 	 */
-	public static void CloseResources(ResultSet rs, Statement stmt) 
+	public static void closeResources(ResultSet rs, Statement stmt) 
 	{
-		CloseResources(rs);
-		CloseResources(stmt);
+		closeResources(rs);
+		closeResources(stmt);
 	}
 
 	/**
 	 * @param conn
 	 * @param stmt
 	 */
-	public static void CloseResources(Connection conn, Statement stmt) 
+	public static void closeResources(Connection conn, Statement stmt) 
 	{
-		CloseResources(stmt);
-		CloseResources(conn);
+		closeResources(stmt);
+		closeResources(conn);
 	}
 
 	/**
 	 * @param conn
 	 * @param rs
 	 */
-	public static void CloseResources(Connection conn, ResultSet rs) 
+	public static void closeResources(Connection conn, ResultSet rs) 
 	{
-		CloseResources(rs);
-		CloseResources(conn);
+		closeResources(rs);
+		closeResources(conn);
 	}
 
 	/**
@@ -195,9 +195,9 @@ public class DBUtil
 	 * @param stmt
 	 * @param rs
 	 */
-	public static void CloseResources(Connection conn, Statement stmt, ResultSet rs)
+	public static void closeResources(Connection conn, Statement stmt, ResultSet rs)
 	{
-		CloseResources(rs);
-		CloseResources(conn, stmt);
+		closeResources(rs);
+		closeResources(conn, stmt);
 	}
 }

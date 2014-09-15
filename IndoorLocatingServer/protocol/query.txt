@@ -6,14 +6,16 @@ Format:
 	"type": "query",
 	"vector": [
 	    {
-	        "BSSID": "AA-AA",
+	        "bssid": "AA-AA",
 	        "level": -50
 	    },
 	    {
-	       "BSSID": "AA-AA",
-	       "level": -50
+	       "bssid": "BB-BB",
+	       "level": -70
 	    }
 	]
+Sample:
+http://59.66.141.113:8080/IndoorLocatingServer/?type=query&vector=%5B%7B%22bssid%22%3A%22AA-AA%22%2C%22level%22%3A-50%7D%2C%7B%22bssid%22%3A%22BB-BB%22%2C%22level%22%3A-70%7D%5D
 
 Orientation:
 	Server->Client

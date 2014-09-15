@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.*;
-
 public class IndoorLocatingServlet extends HttpServlet 
 {
 	private static final long serialVersionUID = 1L;
@@ -34,18 +32,12 @@ public class IndoorLocatingServlet extends HttpServlet
 	    {
 	    	String label=req.getParameter("label").trim();
 	    	String vector=req.getParameter("vector").toString().trim();
-	    	JSONArray jsonArray=JSONArray.fromObject(vector);
-	    	JSONObject jsonObject=new JSONObject();
-	    	jsonObject.put("data",jsonArray);
-	    	boolean flag=DBInterface.InsertRecord(label, vector);
-	    	JSONObject reply=new JSONObject();
-	    	reply.put("flag",flag?1:0);
-	    	out.println(reply.toString());
+	    	out.println(Logic.processInput(label, vector).toString());
 	    }else 
 	    if (type.equals("query")) 
 	    {
 	    	String vector=req.getParameter("vector").toString().trim();
-	    	out.println(Logic.GetLocation(vector));
+	    	out.println(Logic.getLocation(vector));
 	    }
 	}
 }
