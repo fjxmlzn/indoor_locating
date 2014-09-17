@@ -10,4 +10,16 @@
 	<string name="input_hint">位置描述</string>
 	<string name="input_label">请输入位置描述</string>
 	<string name="locate_info_label">定位结果</string>
+	
+	<string name="scan_start_string">开始扫描……</string>
+	<string name="scan_finish_string">扫描完成</string>
+	<string name="upload_start_string">开始上传……</string>
+	<string name="locate_start_string">开始定位……</string>
+	
+	<string name="locate_fail_string">无法定位当前位置</string>
+	<string name="locate_success_string">定位成功</string>
+	<string name="upload_fail_string">上传失败</string>
+	<string name="upload_success_string">上传成功</string>
+	<string name="connect_fail_string">连接失败</string>
+	<string name="upload_empty_string">无已扫描到的WIFI</string>
 </resources>
