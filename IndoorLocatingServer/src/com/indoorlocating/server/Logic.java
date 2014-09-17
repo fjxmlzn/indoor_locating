@@ -35,22 +35,22 @@ public class Logic
 		double result=0;
 		Collections.sort(testVector,new comparator_WIFI_MES());
 		Collections.sort(sampleVector,new comparator_WIFI_MES());
-		int i=0,j=0;
+		int i=0,j=0,count=0;
 		while (j!=sampleVector.size())
 		{
 			if (i>=testVector.size() || testVector.get(i).wid>sampleVector.get(j).wid)
 			{
-				result+=(WIFI_NOTEXISTS_WEIGHT-sampleVector.get(j).level)*(WIFI_NOTEXISTS_WEIGHT-sampleVector.get(j).level);
+				//result+=(WIFI_NOTEXISTS_WEIGHT-sampleVector.get(j).level)*(WIFI_NOTEXISTS_WEIGHT-sampleVector.get(j).level);
 				j++;
 			}else
 			if (testVector.get(i).wid==sampleVector.get(j).wid)
 			{
 				result+=(testVector.get(i).level-sampleVector.get(j).level)*(testVector.get(i).level-sampleVector.get(j).level);
-				i++;j++;
+				i++;j++;count++;
 			}else
 			i++;
 		}
-		return result;
+		return count==0?Double.MAX_VALUE:result/count;
 	}
 	
 	public static JSONObject getLocation(String vector)
@@ -67,6 +67,7 @@ public class Logic
 			{
 				String label=i.next();
 				double tmp;
+				System.out.println(label+"   "+getDis(testVector,getVectorALByLabel(label,WIFI_LEVEL_FLOOR)));
 				if ((tmp=getDis(testVector,getVectorALByLabel(label,WIFI_LEVEL_FLOOR)))<maxDis)
 				{
 					maxDis=tmp;
@@ -125,6 +126,12 @@ class WIFI_MES
 	{
 		this.wid=wid;
 		this.level=level;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "["+wid+" "+level+"]";
 	}
 }
 

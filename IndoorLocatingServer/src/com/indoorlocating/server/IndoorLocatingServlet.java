@@ -27,6 +27,9 @@ public class IndoorLocatingServlet extends HttpServlet
 	    PrintWriter out=resp.getWriter();
 	    
 	    resp.setContentType("text/html;charset=UTF-8");
+	    if (req.getParameter("type")==null) {
+	    	System.out.println("**********\n"+req.getQueryString());
+	    }
 	    String type = req.getParameter("type").toString().trim();
 	    if (type.equals("input"))
 	    {
