@@ -86,15 +86,16 @@ public class DBInterface
 		}	
 	}
 	
-	public static void createWifi(String bssid)
+	public static void createWifi(String bssid,int freq)
 		throws SQLException
 	{
 		Connection conn=null;
 		try
 		{
 			conn=DBUtil.getConnForMySql();
-			PreparedStatement stmt=conn.prepareStatement("INSERT INTO wifi (bssid) VALUES(?)");
+			PreparedStatement stmt=conn.prepareStatement("INSERT INTO wifi (bssid,freq) VALUES(?,?)");
 			stmt.setString(1,bssid);
+			stmt.setInt(2,freq);
 			stmt.executeUpdate();
 		}
 		finally
@@ -197,4 +198,28 @@ public class DBInterface
 			DBUtil.closeResources(conn,res);
 		}	
 	}
+	
+	public static int getFreqByWid(int wid)
+			throws SQLException
+		{
+			Connection conn=null;
+			ResultSet res=null;
+			try
+			{
+				conn=DBUtil.getConnForMySql();
+				PreparedStatement stmt=conn.prepareStatement("SELECT freq FROM wifi WHERE wid=?");
+				stmt.setInt(1,wid);
+				res=stmt.executeQuery();
+				if (res.next())
+				{
+					return res.getInt("freq");
+				}
+				else
+					return -1;
+			}
+			finally
+			{
+				DBUtil.closeResources(conn,res);
+			}	
+		}	
 }

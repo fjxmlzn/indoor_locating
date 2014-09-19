@@ -7,8 +7,9 @@ import java.sql.*;
 
 public class Logic 
 {	
-	final static int WIFI_LEVEL_FLOOR=-100;
+	final static int WIFI_LEVEL_FLOOR=-90;
 	final static int WIFI_NOTEXISTS_WEIGHT=-200;
+	final static double EXP_BASE=10;
 	
 	private static ArrayList<WIFI_MES> getVectorALByVectorString(String vector)
 		throws SQLException
@@ -30,12 +31,31 @@ public class Logic
 		return DBInterface.getVectorALByLabel(label,floor);
 	}
 	
+	private static double getDValue(int wid,double level)
+		throws SQLException
+	{
+	    double exp = (27.55 - (20 * Math.log10(DBInterface.getFreqByWid(wid))) - Math.abs(level)) / 20.0;
+	    return Math.pow(10.0, exp)*100000;
+	}
+	
+	private static double getCValue(int same,int all)
+	{
+		return same==0?Double.MAX_VALUE:Math.pow(Math.asin(Math.pow(1-(double)same/all,2)), 0.8)+1;
+	}
+	
 	private static double getDis(ArrayList<WIFI_MES> testVector, ArrayList<WIFI_MES> sampleVector)
+		throws SQLException
 	{
 		double result=0;
 		Collections.sort(testVector,new comparator_WIFI_MES());
 		Collections.sort(sampleVector,new comparator_WIFI_MES());
-		int i=0,j=0,count=0;
+		int i=0,j=0,count=0,same=0,all=0;
+		
+		for (int p=0;p<testVector.size();p++)
+		{
+			if (testVector.get(p).level>=WIFI_LEVEL_FLOOR)  all++;
+		}
+		
 		while (j!=sampleVector.size())
 		{
 			if (i>=testVector.size() || testVector.get(i).wid>sampleVector.get(j).wid)
@@ -45,12 +65,19 @@ public class Logic
 			}else
 			if (testVector.get(i).wid==sampleVector.get(j).wid)
 			{
-				result+=(testVector.get(i).level-sampleVector.get(j).level)*(testVector.get(i).level-sampleVector.get(j).level);
+				/*
+				result+=(Math.pow(EXP_BASE,testVector.get(i).level)-Math.pow(EXP_BASE,sampleVector.get(j).level))
+					   *(Math.pow(EXP_BASE,testVector.get(i).level)-Math.pow(EXP_BASE,sampleVector.get(j).level));
+				*/
+				result+=(getDValue(testVector.get(i).wid,testVector.get(i).level)-getDValue(testVector.get(i).wid,sampleVector.get(j).level))
+					   *(getDValue(testVector.get(i).wid,testVector.get(i).level)-getDValue(testVector.get(i).wid,sampleVector.get(j).level));
+				if (testVector.get(i).level>=WIFI_LEVEL_FLOOR) same++;
 				i++;j++;count++;
 			}else
 			i++;
 		}
-		return count==0?Double.MAX_VALUE:result/count;
+						System.out.println(count+"    "+same+"    "+all+"    "+getCValue(same,all)+"    "+result/count);
+		return count==0?Double.MAX_VALUE:result/count*getCValue(same,all);
 	}
 	
 	public static JSONObject getLocation(String vector)
@@ -60,6 +87,7 @@ public class Logic
 		{
 			ArrayList<String> labelArrayList=DBInterface.getAllLabelAL();
 			ArrayList<WIFI_MES> testVector=getVectorALByVectorString(vector);
+			System.out.println(testVector);
 			Iterator<String> i=labelArrayList.iterator();
 			double maxDis=Double.MAX_VALUE;
 			String maxLabel="#NULL#";
@@ -67,7 +95,7 @@ public class Logic
 			{
 				String label=i.next();
 				double tmp;
-				System.out.println(label+"   "+getDis(testVector,getVectorALByLabel(label,WIFI_LEVEL_FLOOR)));
+								System.out.println(label+"   "+getDis(testVector,getVectorALByLabel(label,WIFI_LEVEL_FLOOR)));
 				if ((tmp=getDis(testVector,getVectorALByLabel(label,WIFI_LEVEL_FLOOR)))<maxDis)
 				{
 					maxDis=tmp;
@@ -82,6 +110,7 @@ public class Logic
 		catch(Exception e)
 		{
 			System.out.println("ERROR: "+e);
+			e.printStackTrace();
 			result.put("flag",0);
 			return result;
 		}
@@ -101,7 +130,8 @@ public class Logic
 				JSONObject jsonObject=i.next();
 				String bssid=jsonObject.getString("bssid");
 				int level=jsonObject.getInt("level");
-				if (!DBInterface.bssidExists(bssid)) DBInterface.createWifi(bssid);
+				int freq=jsonObject.getInt("freq");
+				if (!DBInterface.bssidExists(bssid)) DBInterface.createWifi(bssid,freq);
 				int wid=DBInterface.getWidByBssid(bssid);
 				DBInterface.createSample(lid,wid,level);
 			}

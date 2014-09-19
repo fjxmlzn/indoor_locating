@@ -8,11 +8,13 @@ Format:
 	"vector": [
 	    {
 	        "bssid": "AA-AA",
-	        "level": -50
+	        "level": -50,
+		"freq" : 111
 	    },
 	    {
-	       "bssid": "BB-BB",
-	       "level": -50
+	        "bssid": "BB-BB",
+	        "level": -50,
+	        "freq" : 111
 	    }
 	]
 Sample:
