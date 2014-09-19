@@ -8,97 +8,132 @@ import java.sql.*;
 public class Logic 
 {	
 	final static int WIFI_LEVEL_FLOOR=-90;
+	final static int WIFI_LOWER_BOUND=-104;
 	final static int WIFI_NOTEXISTS_WEIGHT=-200;
 	final static double EXP_BASE=10;
 	
-	private static ArrayList<WIFI_MES> getVectorALByVectorString(String vector)
+	/**
+	 * 通过字符串形式的JSONArray表示的强度向量获得HashMap形式的强度向量
+	 * @param vector 字符串形式的JSONArray表示的强度向量
+	 * @return HashMap形式的强度向量
+	 * @throws SQLException
+	 */
+	private static HashMap<Integer,Double> getVectorHMByVectorString(String vector)
 		throws SQLException
 	{
-		ArrayList<WIFI_MES> arrayList=new ArrayList<WIFI_MES>();
+		HashMap<Integer,Double> hashMap=new HashMap<Integer,Double>();
 		JSONArray jsonArray=JSONArray.fromObject(vector);
 		Iterator<JSONObject> i=(Iterator<JSONObject>)jsonArray.iterator();
 		while (i.hasNext())
 		{
 			JSONObject jsonObject=i.next();
-			arrayList.add(new WIFI_MES(DBInterface.getWidByBssid(jsonObject.getString("bssid")), jsonObject.getInt("level")));
+			hashMap.put(DBInterface.getWidByBssid(jsonObject.getString("bssid")), (double)jsonObject.getInt("level"));
 		}
-		return arrayList;
+		return hashMap;
 	}
 	
-	private static ArrayList<WIFI_MES> getVectorALByLabel(String label,int floor)
+	/**
+	 * 通过地点label获得HashMap形式的强度向量
+	 * @param label 地点label
+	 * @param floor 所需wifi热点的强度下限 
+	 * @return HashMap形式的强度向量
+	 * @throws SQLException
+	 */
+	private static HashMap<Integer,Double> getVectorHMByLabel(String label,int floor)
 		throws SQLException
 	{
-		return DBInterface.getVectorALByLabel(label,floor);
+		return DBInterface.getVectorHMByLabel(label,floor);
 	}
 	
-	private static double getDValue(int wid,double level)
+	/**
+	 * 根据wifi热点id和强度计算当前点到wifi基站的距离
+	 * @param wid 热点id
+	 * @param level wifi强度（dbm）
+	 * @return 当前点到wifi基站的距离（cm）
+	 * @throws SQLException
+	 */
+	private static double getDistance(int wid,double level)
 		throws SQLException
 	{
 	    double exp = (27.55 - (20 * Math.log10(DBInterface.getFreqByWid(wid))) - Math.abs(level)) / 20.0;
 	    return Math.pow(10.0, exp)*100000;
 	}
 	
-	private static double getCValue(int same,int all)
+	/**
+	 * 获得相似度系数
+	 * @param 采样与测试向量重合维数
+	 * @param 测试向量总维数
+	 * @return 相似度系数
+	 */
+	private static double getSimWeight(int same,int all)
 	{
 		return same==0?Double.MAX_VALUE:Math.pow(Math.asin(Math.pow(1-(double)same/all,2)), 0.8)+1;
 	}
 	
-	private static double getDis(ArrayList<WIFI_MES> testVector, ArrayList<WIFI_MES> sampleVector)
+	/**
+	 * 获得采样向量与测试向量的相似度评价值
+	 * @param testVector HashMap形式的测试向量
+	 * @param sampleVector HashMap形式的采样向量
+	 * @return 相似度评价值
+	 * @throws SQLException
+	 */
+	private static double getEval(HashMap<Integer,Double> testVector, HashMap<Integer,Double> sampleVector)
 		throws SQLException
 	{
 		double result=0;
-		Collections.sort(testVector,new comparator_WIFI_MES());
-		Collections.sort(sampleVector,new comparator_WIFI_MES());
-		int i=0,j=0,count=0,same=0,all=0;
-		
-		for (int p=0;p<testVector.size();p++)
+		int all=0,same=0;
+
+		Iterator<Map.Entry<Integer,Double>> iterM=testVector.entrySet().iterator();
+		while (iterM.hasNext())
 		{
-			if (testVector.get(p).level>=WIFI_LEVEL_FLOOR)  all++;
+			Map.Entry<Integer, Double> entry=iterM.next();
+			if (entry.getValue()>=WIFI_LEVEL_FLOOR) all++;
 		}
 		
-		while (j!=sampleVector.size())
+		Set<Integer> intersection=new HashSet<Integer>();
+		intersection.addAll(testVector.keySet());
+		intersection.retainAll(sampleVector.keySet());
+		
+		Iterator<Integer> iterI=intersection.iterator();
+		
+		while (iterI.hasNext())
 		{
-			if (i>=testVector.size() || testVector.get(i).wid>sampleVector.get(j).wid)
+			int wid=iterI.next();
+			if (testVector.get(wid)>=WIFI_LEVEL_FLOOR) 
 			{
-				//result+=(WIFI_NOTEXISTS_WEIGHT-sampleVector.get(j).level)*(WIFI_NOTEXISTS_WEIGHT-sampleVector.get(j).level);
-				j++;
-			}else
-			if (testVector.get(i).wid==sampleVector.get(j).wid)
-			{
-				/*
-				result+=(Math.pow(EXP_BASE,testVector.get(i).level)-Math.pow(EXP_BASE,sampleVector.get(j).level))
-					   *(Math.pow(EXP_BASE,testVector.get(i).level)-Math.pow(EXP_BASE,sampleVector.get(j).level));
-				*/
-				result+=(getDValue(testVector.get(i).wid,testVector.get(i).level)-getDValue(testVector.get(i).wid,sampleVector.get(j).level))
-					   *(getDValue(testVector.get(i).wid,testVector.get(i).level)-getDValue(testVector.get(i).wid,sampleVector.get(j).level));
-				if (testVector.get(i).level>=WIFI_LEVEL_FLOOR) same++;
-				i++;j++;count++;
-			}else
-			i++;
+				same++;
+				result+=(getDistance(wid,testVector.get(wid))-getDistance(wid,sampleVector.get(wid)))
+					   *(getDistance(wid,testVector.get(wid))-getDistance(wid,sampleVector.get(wid)));
+			}
 		}
-						System.out.println(count+"    "+same+"    "+all+"    "+getCValue(same,all)+"    "+result/count);
-		return count==0?Double.MAX_VALUE:result/count*getCValue(same,all);
+						System.out.println(same+"    "+all+"    "+getSimWeight(same,all)+"    "+result/same);
+		return same==0?Double.MAX_VALUE:result/same*getSimWeight(same,all);
 	}
 	
+	/**
+	 * 处理定位请求
+	 * @param vector 字符串形式的JSONArray表示的强度向量
+	 * @return JSON格式的定位结果
+	 */
 	public static JSONObject getLocation(String vector)
 	{
 		JSONObject result=new JSONObject();
 		try
 		{
 			ArrayList<String> labelArrayList=DBInterface.getAllLabelAL();
-			ArrayList<WIFI_MES> testVector=getVectorALByVectorString(vector);
-			System.out.println(testVector);
+			HashMap<Integer,Double> testVector=getVectorHMByVectorString(vector);
+							System.out.println(testVector);
 			Iterator<String> i=labelArrayList.iterator();
-			double maxDis=Double.MAX_VALUE;
+			double maxEval=Double.MAX_VALUE;
 			String maxLabel="#NULL#";
 			while (i.hasNext())
 			{
 				String label=i.next();
 				double tmp;
-								System.out.println(label+"   "+getDis(testVector,getVectorALByLabel(label,WIFI_LEVEL_FLOOR)));
-				if ((tmp=getDis(testVector,getVectorALByLabel(label,WIFI_LEVEL_FLOOR)))<maxDis)
+								System.out.println(label+"   "+getEval(testVector,getVectorHMByLabel(label,WIFI_LOWER_BOUND)));
+				if ((tmp=getEval(testVector,getVectorHMByLabel(label,WIFI_LOWER_BOUND)))<maxEval)
 				{
-					maxDis=tmp;
+					maxEval=tmp;
 					maxLabel=label;
 				}
 			}
@@ -116,6 +151,12 @@ public class Logic
 		}
 	}
 	
+	/**
+	 * 处理采样请求
+	 * @param label 地点标签
+	 * @param vector 字符串形式的JSONArray表示的强度向量
+	 * @return JSON格式的采样入库结果
+	 */
 	public static JSONObject processInput(String label,String vector)
 	{
 		JSONObject result=new JSONObject();
@@ -144,32 +185,5 @@ public class Logic
 			result.put("flag",0);
 			return result;
 		}
-	}
-}
-
-class WIFI_MES
-{
-	public int wid;
-	public double level; 
-	
-	public WIFI_MES(int wid,double level)
-	{
-		this.wid=wid;
-		this.level=level;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return "["+wid+" "+level+"]";
-	}
-}
-
-class comparator_WIFI_MES implements Comparator<WIFI_MES>
-{
-	public int compare(WIFI_MES a,WIFI_MES b)
-	{
-		if (a.wid==b.wid) return 0;
-		return a.wid<b.wid?-1:1;
 	}
 }

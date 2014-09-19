@@ -51,7 +51,7 @@ public class DBUtil
 	}
 
 	/**»ñµÃPreparedStatement
-	 * 	 * @param sql
+	 * @param sql
 	 * @return PreparedStatement pstmt
 	 */
 	public static PreparedStatement getPreparedStatemnt(Connection conn, String sql)
