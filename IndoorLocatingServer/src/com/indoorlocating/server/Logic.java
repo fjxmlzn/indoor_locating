@@ -18,16 +18,16 @@ public class Logic
 	 * @return HashMap形式的强度向量
 	 * @throws SQLException
 	 */
-	private static HashMap<Integer,Double> getVectorHMByVectorString(String vector)
+	private static HashMap<Integer,WIFI_MES> getVectorHMByVectorString(String vector)
 		throws SQLException
 	{
-		HashMap<Integer,Double> hashMap=new HashMap<Integer,Double>();
+		HashMap<Integer,WIFI_MES> hashMap=new HashMap<Integer,WIFI_MES>();
 		JSONArray jsonArray=JSONArray.fromObject(vector);
 		Iterator<JSONObject> i=(Iterator<JSONObject>)jsonArray.iterator();
 		while (i.hasNext())
 		{
 			JSONObject jsonObject=i.next();
-			hashMap.put(DBInterface.getWidByBssid(jsonObject.getString("bssid")), (double)jsonObject.getInt("level"));
+			hashMap.put(DBInterface.getWidByBssid(jsonObject.getString("bssid")), new WIFI_MES((double)jsonObject.getInt("level"),-1));
 		}
 		return hashMap;
 	}
@@ -39,7 +39,7 @@ public class Logic
 	 * @return HashMap形式的强度向量
 	 * @throws SQLException
 	 */
-	private static HashMap<Integer,Double> getVectorHMByLabel(String label,int floor)
+	private static HashMap<Integer,WIFI_MES> getVectorHMByLabel(String label,int floor)
 		throws SQLException
 	{
 		return DBInterface.getVectorHMByLabel(label,floor);
@@ -52,11 +52,11 @@ public class Logic
 	 * @return 当前点到wifi基站的距离（cm）
 	 * @throws SQLException
 	 */
-	private static double getDistance(int wid,double level)
+	private static double getDistance(int freq,double level)
 		throws SQLException
 	{
-	    double exp = (27.55 - (20 * Math.log10(DBInterface.getFreqByWid(wid))) - Math.abs(level)) / 20.0;
-	    return Math.pow(10.0, exp)*100000;
+	    double exp = (27.55 - (20 * Math.log10(freq)) + Math.abs(level) + 10) / 20.0;
+	    return Math.pow(10.0, exp);
 	}
 	
 	/**
@@ -77,17 +77,17 @@ public class Logic
 	 * @return 相似度评价值
 	 * @throws SQLException
 	 */
-	private static double getEval(HashMap<Integer,Double> testVector, HashMap<Integer,Double> sampleVector)
+	private static double getEval(HashMap<Integer,WIFI_MES> testVector, HashMap<Integer,WIFI_MES> sampleVector)
 		throws SQLException
 	{
 		double result=0;
 		int all=0,same=0;
 
-		Iterator<Map.Entry<Integer,Double>> iterM=testVector.entrySet().iterator();
+		Iterator<Map.Entry<Integer,WIFI_MES>> iterM=testVector.entrySet().iterator();
 		while (iterM.hasNext())
 		{
-			Map.Entry<Integer, Double> entry=iterM.next();
-			if (entry.getValue()>=WIFI_LEVEL_FLOOR) all++;
+			Map.Entry<Integer,WIFI_MES> entry=iterM.next();
+			if (entry.getValue().level>=WIFI_LEVEL_FLOOR) all++;
 		}
 		
 		Set<Integer> intersection=new HashSet<Integer>();
@@ -99,11 +99,11 @@ public class Logic
 		while (iterI.hasNext())
 		{
 			int wid=iterI.next();
-			if (testVector.get(wid)>=WIFI_LEVEL_FLOOR) 
+			if (testVector.get(wid).level>=WIFI_LEVEL_FLOOR) 
 			{
 				same++;
-				result+=(getDistance(wid,testVector.get(wid))-getDistance(wid,sampleVector.get(wid)))
-					   *(getDistance(wid,testVector.get(wid))-getDistance(wid,sampleVector.get(wid)));
+				result+=(getDistance(sampleVector.get(wid).freq,testVector.get(wid).level)-getDistance(sampleVector.get(wid).freq,sampleVector.get(wid).level))
+					   *(getDistance(sampleVector.get(wid).freq,testVector.get(wid).level)-getDistance(sampleVector.get(wid).freq,sampleVector.get(wid).level));
 			}
 		}
 						System.out.println(same+"    "+all+"    "+getSimWeight(same,all)+"    "+result/same);
@@ -121,7 +121,7 @@ public class Logic
 		try
 		{
 			ArrayList<String> labelArrayList=DBInterface.getAllLabelAL();
-			HashMap<Integer,Double> testVector=getVectorHMByVectorString(vector);
+			HashMap<Integer,WIFI_MES> testVector=getVectorHMByVectorString(vector);
 							System.out.println(testVector);
 			Iterator<String> i=labelArrayList.iterator();
 			double maxEval=Double.MAX_VALUE;
@@ -186,4 +186,15 @@ public class Logic
 			return result;
 		}
 	}
+}
+
+class WIFI_MES
+{
+	public WIFI_MES(double level,int freq)
+	{
+		this.level=level;
+		this.freq=freq;
+	}
+	double level;
+	int freq;
 }

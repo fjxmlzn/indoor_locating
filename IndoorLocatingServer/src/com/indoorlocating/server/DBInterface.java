@@ -206,24 +206,24 @@ public class DBInterface
 	 * @return HashMap形式的强度向量
 	 * @throws SQLException
 	 */
-	public static HashMap<Integer,Double> getVectorHMByLabel(String label,int floor)
+	public static HashMap<Integer,WIFI_MES> getVectorHMByLabel(String label,int floor)
 		throws SQLException
 	{
 		Connection conn=null;
 		ResultSet res=null;
 		try
 		{
-			HashMap<Integer,Double> result=new HashMap<Integer,Double>();
+			HashMap<Integer,WIFI_MES> result=new HashMap<Integer,WIFI_MES>();
 			int lid=getLidByLabel(label);
 			conn=DBUtil.getConnForMySql();
-			PreparedStatement stmt=conn.prepareStatement("SELECT wid,AVG(level) FROM sample WHERE lid=? AND wid NOT IN (SELECT wid FROM sample WHERE lid=? AND level<?) GROUP BY wid");
+			PreparedStatement stmt=conn.prepareStatement("SELECT sample.wid,AVG(level),freq FROM sample,wifi WHERE lid=? AND wifi.wid=sample.wid AND sample.wid NOT IN (SELECT wid FROM sample WHERE lid=? AND level<?) GROUP BY wid");
 			stmt.setInt(1,lid);
 			stmt.setInt(2,lid);
 			stmt.setInt(3,floor);
 			res=stmt.executeQuery();
 			while (res.next())
 			{
-				result.put(res.getInt(1),res.getDouble(2));
+				result.put(res.getInt(1),new WIFI_MES(res.getDouble(2),res.getInt(3)));
 			}
 			return result;
 		}
