@@ -8,7 +8,7 @@ import java.sql.*;
 public class Logic 
 {	
 	final static int WIFI_LEVEL_FLOOR=-90;
-	final static int WIFI_LOWER_BOUND=-104;
+	final static int WIFI_LOWER_BOUND=-90;
 	final static int WIFI_NOTEXISTS_WEIGHT=-200;
 	final static double EXP_BASE=10;
 	
@@ -106,7 +106,7 @@ public class Logic
 					   *(getDistance(sampleVector.get(wid).freq,testVector.get(wid).level)-getDistance(sampleVector.get(wid).freq,sampleVector.get(wid).level));
 			}
 		}
-						System.out.println(same+"    "+all+"    "+getSimWeight(same,all)+"    "+result/same);
+		//System.out.println(same+"    "+all+"    "+getSimWeight(same,all)+"    "+result/same);
 		return same==0?Double.MAX_VALUE:result/same*getSimWeight(same,all);
 	}
 	
@@ -122,7 +122,7 @@ public class Logic
 		{
 			ArrayList<String> labelArrayList=DBInterface.getAllLabelAL();
 			HashMap<Integer,WIFI_MES> testVector=getVectorHMByVectorString(vector);
-							System.out.println(testVector);
+			//System.out.println(testVector);
 			Iterator<String> i=labelArrayList.iterator();
 			double maxEval=Double.MAX_VALUE;
 			String maxLabel="#NULL#";
@@ -130,7 +130,7 @@ public class Logic
 			{
 				String label=i.next();
 				double tmp;
-								System.out.println(label+"   "+getEval(testVector,getVectorHMByLabel(label,WIFI_LOWER_BOUND)));
+				//System.out.println(label+"   "+getEval(testVector,getVectorHMByLabel(label,WIFI_LOWER_BOUND)));
 				if ((tmp=getEval(testVector,getVectorHMByLabel(label,WIFI_LOWER_BOUND)))<maxEval)
 				{
 					maxEval=tmp;
@@ -140,6 +140,7 @@ public class Logic
 			
 			result.put("flag", 1);
 			result.put("label", maxLabel);
+			//System.out.println("ANSWER: "+maxLabel);
 			return result;
 		}
 		catch(Exception e)
@@ -197,4 +198,10 @@ class WIFI_MES
 	}
 	double level;
 	int freq;
+	
+	@Override
+	public String toString()
+	{
+		return "[level:"+level+" freq:"+freq+"]";
+	}
 }
